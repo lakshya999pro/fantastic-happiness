@@ -14,20 +14,18 @@
   <div id="root"></div>
   <script>
     function playMovie(tmdbId, title) {
-      if (window.AndroidBridge && window.AndroidBridge.playMovie) {
-        // Send TMDB ID & Title to Android Native PlayerActivity
+      if (window.AndroidBridge && typeof window.AndroidBridge.playMovie === 'function') {
         window.AndroidBridge.playMovie(String(tmdbId), title || '');
       } else {
-        alert("AndroidBridge is not available (running in desktop browser)");
+        console.warn("AndroidBridge is not available (running in web browser)");
       }
     }
 
     function playTvShow(tmdbId, season, episode, title) {
-      if (window.AndroidBridge && window.AndroidBridge.playTvShow) {
-        // Send TMDB ID, Season, Episode & Title to PlayerActivity
+      if (window.AndroidBridge && typeof window.AndroidBridge.playTvShow === 'function') {
         window.AndroidBridge.playTvShow(String(tmdbId), parseInt(season), parseInt(episode), title || '');
       } else {
-        alert("AndroidBridge is not available (running in desktop browser)");
+        console.warn("AndroidBridge is not available (running in web browser)");
       }
     }
   </script>

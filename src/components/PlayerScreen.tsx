@@ -233,6 +233,13 @@ export const PlayerScreen: React.FC<{ target: PlayTarget; onClose: () => void; o
   if (useGoServer) {
     return (
       <div className="fixed inset-0 z-[120] select-none bg-black">
+        <button
+          onClick={onClose}
+          aria-label="Close player"
+          className="absolute left-4 top-4 z-[130] flex h-11 w-11 items-center justify-center rounded-full bg-black/70 text-white shadow-md active:scale-95"
+        >
+          <ArrowLeft className="h-6 w-6" />
+        </button>
         <iframe
           src={finalPlayerUrl}
           title={heading || 'Player'}

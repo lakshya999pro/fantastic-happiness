@@ -113,24 +113,14 @@ export function triggerNativePlay(target: PlayTarget, title: string = ''): boole
   const season = Number(target.season || 1);
   const episode = Number(target.episode || 1);
 
-  if (typeof window !== 'undefined') {
-    if (window.AndroidBridge) {
-      if (isSeries && window.AndroidBridge.playTvShow) {
-        console.log('[AndroidBridge] Launching playTvShow:', tmdbId, season, episode, title);
-        window.AndroidBridge.playTvShow(tmdbId, season, episode, title);
-        return true;
-      } else if (!isSeries && window.AndroidBridge.playMovie) {
-        console.log('[AndroidBridge] Launching playMovie:', tmdbId, title);
-        window.AndroidBridge.playMovie(tmdbId, title);
-        return true;
-      }
-    }
-
-    if (isSeries && typeof window.playTvShow === 'function') {
-      window.playTvShow(tmdbId, season, episode, title);
+  if (typeof window !== 'undefined' && window.AndroidBridge) {
+    if (isSeries && typeof window.AndroidBridge.playTvShow === 'function') {
+      console.log('[AndroidBridge] Launching playTvShow:', tmdbId, season, episode, title);
+      window.AndroidBridge.playTvShow(tmdbId, season, episode, title);
       return true;
-    } else if (!isSeries && typeof window.playMovie === 'function') {
-      window.playMovie(tmdbId, title);
+    } else if (!isSeries && typeof window.AndroidBridge.playMovie === 'function') {
+      console.log('[AndroidBridge] Launching playMovie:', tmdbId, title);
+      window.AndroidBridge.playMovie(tmdbId, title);
       return true;
     }
   }

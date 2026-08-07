@@ -9,27 +9,25 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <script type="module" crossorigin src="/assets/index-D8Mht8zP.js"></script>
+  <script type="module" crossorigin src="/assets/index-COBRzllo.js"></script>
   <link rel="stylesheet" crossorigin href="/assets/index-CmDAg5DV.css">
 </head>
 <body>
   <div id="root"></div>
   <script>
     function playMovie(tmdbId, title) {
-      if (window.AndroidBridge && window.AndroidBridge.playMovie) {
-        // Send TMDB ID & Title to Android Native PlayerActivity
+      if (window.AndroidBridge && typeof window.AndroidBridge.playMovie === 'function') {
         window.AndroidBridge.playMovie(String(tmdbId), title || '');
       } else {
-        alert("AndroidBridge is not available (running in desktop browser)");
+        console.warn("AndroidBridge is not available (running in web browser)");
       }
     }
 
     function playTvShow(tmdbId, season, episode, title) {
-      if (window.AndroidBridge && window.AndroidBridge.playTvShow) {
-        // Send TMDB ID, Season, Episode & Title to PlayerActivity
+      if (window.AndroidBridge && typeof window.AndroidBridge.playTvShow === 'function') {
         window.AndroidBridge.playTvShow(String(tmdbId), parseInt(season), parseInt(episode), title || '');
       } else {
-        alert("AndroidBridge is not available (running in desktop browser)");
+        console.warn("AndroidBridge is not available (running in web browser)");
       }
     }
   </script>
