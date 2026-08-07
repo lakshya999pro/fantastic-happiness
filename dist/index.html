@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="Netflix mobile interface — school project build." />
+  <title>Netflix</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script type="module" crossorigin src="/assets/index-D8Mht8zP.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CmDAg5DV.css">
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+    function playMovie(tmdbId, title) {
+      if (window.AndroidBridge && window.AndroidBridge.playMovie) {
+        // Send TMDB ID & Title to Android Native PlayerActivity
+        window.AndroidBridge.playMovie(String(tmdbId), title || '');
+      } else {
+        alert("AndroidBridge is not available (running in desktop browser)");
+      }
+    }
+
+    function playTvShow(tmdbId, season, episode, title) {
+      if (window.AndroidBridge && window.AndroidBridge.playTvShow) {
+        // Send TMDB ID, Season, Episode & Title to PlayerActivity
+        window.AndroidBridge.playTvShow(String(tmdbId), parseInt(season), parseInt(episode), title || '');
+      } else {
+        alert("AndroidBridge is not available (running in desktop browser)");
+      }
+    }
+  </script>
+</body>
+</html>

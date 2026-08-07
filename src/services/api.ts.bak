@@ -1,0 +1,196 @@
+import { ClipItem, Episode, GameItem, HomeData, Row, TitleItem } from '../types';
+
+/* ------------------------------------------------------------------ *
+ * A tiny in-memory cache so opening a title feels instant: rows already
+ * carry poster/title/type, and the full detail hydrates in behind it.
+ * ------------------------------------------------------------------ */
+export const titlesCache: Record<number, TitleItem> = {};
+
+export function cacheItems(items: TitleItem[] | undefined) {
+  (items || []).forEach(t => {
+    if (t && t.id != null) titlesCache[t.id] = { ...titlesCache[t.id], ...t };
+  });
+}
+
+export function getTitle(id: number): TitleItem | null {
+  return titlesCache[id] || null;
+}
+
+export const API_BASE = ((import.meta as any).env?.VITE_API_BASE) || 'http://localhost:8080';
+
+export function getUrl(endpoint: string): string {
+  if (endpoint.startsWith('http')) return endpoint;
+  if (typeof window !== 'undefined' && window.location.port === '5173') {
+    return endpoint;
+  }
+  return `${API_BASE}${endpoint}`;
+}
+
+async function getJson<T>(endpoint: string): Promise<T> {
+  const url = getUrl(endpoint);
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`${url} -> ${res.status}`);
+  return res.json();
+}
+
+export async function fetchHome(): Promise<HomeData> {
+  const data = await getJson<HomeData>('/api/home');
+  data.rows.forEach(r => cacheItems(r.items));
+  return data;
+}
+
+export async function fetchGenres(): Promise<string[]> {
+  const data = await getJson<{ genres: string[] }>('/api/genres');
+  return data.genres || [];
+}
+
+export async function fetchGames(): Promise<GameItem[]> {
+  const data = await getJson<{ items: GameItem[] }>('/api/games');
+  return data.items || [];
+}
+
+export async function fetchNewHot(): Promise<{
+  comingSoon: TitleItem[];
+  everyone: TitleItem[];
+  top10: TitleItem[];
+}> {
+  const data = await getJson<any>('/api/newhot');
+  cacheItems(data.comingSoon);
+  cacheItems(data.everyone);
+  cacheItems(data.top10);
+  return data;
+}
+
+export async function fetchTitleDetail(id: number, season = 1): Promise<TitleItem> {
+  const data = await getJson<TitleItem>(`/api/title/${id}?season=${season}`);
+  cacheItems([data]);
+  return data;
+}
+
+export async function fetchSeason(id: number, season: number): Promise<Episode[]> {
+  const data = await getJson<{ episodes: Episode[] }>(`/api/season?id=${id}&season=${season}`);
+  return data.episodes || [];
+}
+
+export async function fetchSimilar(id: number, limit = 18): Promise<TitleItem[]> {
+  try {
+    const data = await getJson<{ items: TitleItem[] }>(`/api/similar?id=${id}&limit=${limit}`);
+    cacheItems(data.items);
+    return data.items || [];
+  } catch {
+    return [];
+  }
+}
+
+export async function fetchSearch(query: string): Promise<{
+  topResults: TitleItem[];
+  categories: Row[];
+  recommended: TitleItem[];
+}> {
+  const data = await getJson<any>(`/api/search?q=${encodeURIComponent(query)}`);
+  cacheItems(data.topResults);
+  cacheItems(data.recommended);
+  (data.categories || []).forEach((c: any) => cacheItems(c.items));
+  return {
+    topResults: data.topResults || [],
+    categories: data.categories || [],
+    recommended: data.recommended || []
+  };
+}
+
+export async function fetchCatalog(params: {
+  type?: 'movie' | 'tvshow';
+  genre?: string;
+  limit?: number;
+  offset?: number;
+}): Promise<{ items: TitleItem[]; total: number }> {
+  const qs = new URLSearchParams();
+  if (params.type) qs.set('type', params.type);
+  if (params.genre) qs.set('genre', params.genre);
+  qs.set('limit', String(params.limit ?? 30));
+  qs.set('offset', String(params.offset ?? 0));
+  const data = await getJson<any>(`/api/catalog?${qs.toString()}`);
+  cacheItems(data.items);
+  return { items: data.items || [], total: data.total || 0 };
+}
+
+/* ------------------------------------------------------------------ *
+ * Local storage: My List, watch history, playback position, settings.
+ * ------------------------------------------------------------------ */
+export function loadState<T>(key: string, fallback: T): T {
+  try {
+    const s = localStorage.getItem(key);
+    return s ? (JSON.parse(s) as T) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+export function saveState<T>(key: string, value: T): void {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    /* storage full or blocked — the app still works, just doesn't remember */
+  }
+}
+
+function posKey(id: number, isSeries: boolean, season: number, episode: number) {
+  return isSeries ? `nf_pos_${id}_s${season}_e${episode}` : `nf_pos_${id}`;
+}
+
+export function getProgress(id: number, isSeries = false, season = 1, episode = 1) {
+  const raw = loadState<{ pos: number; dur: number } | null>(posKey(id, isSeries, season, episode), null);
+  return raw && raw.pos > 3 ? raw : null;
+}
+
+export function saveProgress(
+  id: number,
+  isSeries: boolean,
+  season: number,
+  episode: number,
+  pos: number,
+  dur: number
+) {
+  if (pos < 3 || !dur) return;
+  const payload = { pos: Math.floor(pos), dur: Math.floor(dur), time: Date.now() };
+  saveState(posKey(id, isSeries, season, episode), payload);
+  saveState(`nf_pos_${id}`, payload);
+}
+
+export function progressPercent(id: number): number {
+  const raw = loadState<{ pos: number; dur: number } | null>(`nf_pos_${id}`, null);
+  if (!raw || !raw.dur) return 0;
+  return Math.min(100, Math.round((raw.pos / raw.dur) * 100));
+}
+
+export async function fetchClipUrl(url: string): Promise<string> {
+  if (!url) return '';
+  try {
+    const data = await getJson<{ error: boolean; data: string }>(`/api/clipurl?url=${encodeURIComponent(url)}`);
+    return data.data || url;
+  } catch {
+    return url;
+  }
+}
+
+export async function fetchClips(): Promise<ClipItem[]> {
+  try {
+    const data = await getJson<{ items: ClipItem[] }>('/api/clips');
+    return data.items || [];
+  } catch {
+    return [];
+  }
+}
+
+export async function addClipApi(clipData: Partial<ClipItem>): Promise<{ success: boolean; item?: ClipItem; error?: string }> {
+  try {
+    const res = await fetch(getUrl('/api/admin/clip'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(clipData)
+    });
+    return await res.json();
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}

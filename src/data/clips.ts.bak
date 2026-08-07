@@ -1,0 +1,86 @@
+import { ClipItem } from '../types';
+
+/*
+  Data for the "Clips" tab (short, full-screen vertical videos).
+  titleId values are real TMDB ids present in data/netflix_shows.json, so the
+  poster/title shown on the clip is looked up through /api/titles.
+*/
+export const CLIPS: ClipItem[] = [
+  {
+    id: 1,
+    titleId: 351460,
+    videoUrl: 'https://vids.st/storage/uploads/video113591/1000202997.mp4',
+    poster: 'https://picsum.photos/seed/clip-dontdie/720/1280',
+    title: "Don't Die: The Man Who Wants to Live Forever",
+    tags: ['Captivating', 'Provocative', 'British'],
+    description:
+      'Wealthy entrepreneur Bryan has turned his own body into a full-time experiment — every meal, every hour of sleep, measured against one goal.',
+    rating: 'U/A 16+'
+  },
+  {
+    id: 2,
+    titleId: 1291608,
+    videoUrl: 'https://www.instagram.com/reel/DMHHMsUzNRF',
+    poster: 'https://picsum.photos/seed/clip-dhurandhar/720/1280',
+    title: 'Dhurandhar',
+    tags: ['Intense', 'Action-packed', 'Undercover'],
+    description:
+      'An agent is sent so deep undercover that even his own people deny knowing him. No backup. No extraction plan. Just the mission.',
+    rating: 'A'
+  },
+  {
+    id: 3,
+    titleId: 66732,
+    videoUrl: 'https://www.instagram.com/reel/DbfTCH7TKEs',
+    poster: 'https://picsum.photos/seed/clip-strangerthings/720/1280',
+    title: 'Stranger Things',
+    tags: ['Nostalgic', 'Eerie', 'Fan-favorite'],
+    description:
+      'The final season brings the Upside Down closer to home than ever before. Something in Hawkins never really left.',
+    rating: 'U/A 16+'
+  },
+  {
+    id: 4,
+    titleId: 71446,
+    videoUrl: 'https://www.instagram.com/reel/DbfTSbAzOM9',
+    poster: 'https://picsum.photos/seed/clip-moneyheist/720/1280',
+    title: 'Money Heist',
+    tags: ['Tense', 'Heist', 'Binge-worthy'],
+    description:
+      "The Professor's crew is running out of time inside the Royal Mint of Spain. The plan only works if nobody breaks.",
+    rating: 'A'
+  },
+  {
+    id: 5,
+    titleId: 1484913,
+    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+    poster: 'https://picsum.photos/seed/clip-ikka/720/1280',
+    title: 'Ikka',
+    tags: ['Gripping', 'Courtroom', 'Twisty'],
+    description:
+      "A lawyer's oldest grudge becomes the only thing standing between his client and prison. He hated him long before he had to defend him.",
+    rating: 'U/A 16+'
+  },
+  {
+    id: 6,
+    titleId: 601,
+    videoUrl: 'https://www.instagram.com/reel/DHPitAazs8v',
+    poster: 'https://picsum.photos/seed/clip-mentalist/720/1280',
+    title: 'The Mentalist',
+    tags: ['Clever', 'Classic', 'Case-of-the-week'],
+    description:
+      'Patrick Jane reads a room the way most people read a headline. He never carries a gun. He doesn\u2019t need one.',
+    rating: 'U/A 13+'
+  }
+];
+
+export const CLIP_CATEGORIES = [
+  'For You',
+  'Comedy',
+  'Action',
+  'Romance',
+  'Thriller',
+  'Reality',
+  'Anime',
+  'Documentary'
+];
