@@ -98,30 +98,45 @@ export type PlayTarget = {
 declare global {
   interface Window {
     AndroidBridge?: {
+      openPlayer?: (mediaId: string, tmdbId: number, type: string, season: number, episode: number, title?: string) => void;
+      playVideo?: (videoUrlOrJson: string, title?: string) => void;
+      play?: (videoUrlOrJson: string) => void;
       playMovie?: (tmdbId: string, title: string) => void;
       playTvShow?: (tmdbId: string, season: number, episode: number, title: string) => void;
     };
-    playMovie?: (tmdbId: string | number, title: string) => void;
-    playTvShow?: (tmdbId: string | number, season: number | string, episode: number | string, title: string) => void;
+    AndroidApp?: Window['AndroidBridge'];
+    AndroidNative?: Window['AndroidBridge'];
+    Android?: Window['AndroidBridge'];
   }
 }
 
 /** Triggers Android native PlayerActivity via AndroidBridge if present */
 export function triggerNativePlay(target: PlayTarget, title: string = ''): boolean {
   const isSeries = target.isSeries;
-  const tmdbId = String(target.id);
+  const tmdbId = target.id;
+  const tmdbIdStr = String(target.id);
   const season = Number(target.season || 1);
   const episode = Number(target.episode || 1);
+  const mediaType = isSeries ? 'tv' : 'movie';
 
-  if (typeof window !== 'undefined' && window.AndroidBridge) {
-    if (isSeries && typeof window.AndroidBridge.playTvShow === 'function') {
-      console.log('[AndroidBridge] Launching playTvShow:', tmdbId, season, episode, title);
-      window.AndroidBridge.playTvShow(tmdbId, season, episode, title);
-      return true;
-    } else if (!isSeries && typeof window.AndroidBridge.playMovie === 'function') {
-      console.log('[AndroidBridge] Launching playMovie:', tmdbId, title);
-      window.AndroidBridge.playMovie(tmdbId, title);
-      return true;
+  if (typeof window !== 'undefined') {
+    const bridge = window.AndroidBridge || window.AndroidApp || window.AndroidNative || window.Android;
+    if (bridge) {
+      if (typeof bridge.openPlayer === 'function') {
+        console.log('[AndroidBridge] Calling openPlayer:', tmdbIdStr, tmdbId, mediaType, season, episode, title);
+        bridge.openPlayer(tmdbIdStr, tmdbId, mediaType, season, episode, title);
+        return true;
+      }
+      if (typeof bridge.playVideo === 'function') {
+        console.log('[AndroidBridge] Calling playVideo:', tmdbIdStr, title);
+        bridge.playVideo(tmdbIdStr, title);
+        return true;
+      }
+      if (typeof bridge.play === 'function') {
+        console.log('[AndroidBridge] Calling play:', tmdbIdStr);
+        bridge.play(tmdbIdStr);
+        return true;
+      }
     }
   }
   return false;

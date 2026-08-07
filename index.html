@@ -14,16 +14,30 @@
   <div id="root"></div>
   <script>
     function playMovie(tmdbId, title) {
-      if (window.AndroidBridge && typeof window.AndroidBridge.playMovie === 'function') {
-        window.AndroidBridge.playMovie(String(tmdbId), title || '');
+      var bridge = window.AndroidBridge || window.AndroidApp || window.AndroidNative || window.Android;
+      if (bridge) {
+        if (typeof bridge.openPlayer === 'function') {
+          bridge.openPlayer(String(tmdbId), parseInt(tmdbId) || 0, 'movie', 1, 1, title || '');
+        } else if (typeof bridge.playVideo === 'function') {
+          bridge.playVideo(String(tmdbId), title || '');
+        } else if (typeof bridge.play === 'function') {
+          bridge.play(String(tmdbId));
+        }
       } else {
         console.warn("AndroidBridge is not available (running in web browser)");
       }
     }
 
     function playTvShow(tmdbId, season, episode, title) {
-      if (window.AndroidBridge && typeof window.AndroidBridge.playTvShow === 'function') {
-        window.AndroidBridge.playTvShow(String(tmdbId), parseInt(season), parseInt(episode), title || '');
+      var bridge = window.AndroidBridge || window.AndroidApp || window.AndroidNative || window.Android;
+      if (bridge) {
+        if (typeof bridge.openPlayer === 'function') {
+          bridge.openPlayer(String(tmdbId), parseInt(tmdbId) || 0, 'tv', parseInt(season) || 1, parseInt(episode) || 1, title || '');
+        } else if (typeof bridge.playVideo === 'function') {
+          bridge.playVideo(String(tmdbId), title || '');
+        } else if (typeof bridge.play === 'function') {
+          bridge.play(String(tmdbId));
+        }
       } else {
         console.warn("AndroidBridge is not available (running in web browser)");
       }

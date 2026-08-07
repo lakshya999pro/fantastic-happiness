@@ -9,23 +9,37 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <script type="module" crossorigin src="/assets/index-COBRzllo.js"></script>
+  <script type="module" crossorigin src="/assets/index-pp44xwkn.js"></script>
   <link rel="stylesheet" crossorigin href="/assets/index-CmDAg5DV.css">
 </head>
 <body>
   <div id="root"></div>
   <script>
     function playMovie(tmdbId, title) {
-      if (window.AndroidBridge && typeof window.AndroidBridge.playMovie === 'function') {
-        window.AndroidBridge.playMovie(String(tmdbId), title || '');
+      var bridge = window.AndroidBridge || window.AndroidApp || window.AndroidNative || window.Android;
+      if (bridge) {
+        if (typeof bridge.openPlayer === 'function') {
+          bridge.openPlayer(String(tmdbId), parseInt(tmdbId) || 0, 'movie', 1, 1, title || '');
+        } else if (typeof bridge.playVideo === 'function') {
+          bridge.playVideo(String(tmdbId), title || '');
+        } else if (typeof bridge.play === 'function') {
+          bridge.play(String(tmdbId));
+        }
       } else {
         console.warn("AndroidBridge is not available (running in web browser)");
       }
     }
 
     function playTvShow(tmdbId, season, episode, title) {
-      if (window.AndroidBridge && typeof window.AndroidBridge.playTvShow === 'function') {
-        window.AndroidBridge.playTvShow(String(tmdbId), parseInt(season), parseInt(episode), title || '');
+      var bridge = window.AndroidBridge || window.AndroidApp || window.AndroidNative || window.Android;
+      if (bridge) {
+        if (typeof bridge.openPlayer === 'function') {
+          bridge.openPlayer(String(tmdbId), parseInt(tmdbId) || 0, 'tv', parseInt(season) || 1, parseInt(episode) || 1, title || '');
+        } else if (typeof bridge.playVideo === 'function') {
+          bridge.playVideo(String(tmdbId), title || '');
+        } else if (typeof bridge.play === 'function') {
+          bridge.play(String(tmdbId));
+        }
       } else {
         console.warn("AndroidBridge is not available (running in web browser)");
       }
