@@ -86,7 +86,7 @@ export const RankedCard: React.FC<{ item: TitleItem; rank: number; onOpen: (id: 
       className="relative z-10 ml-auto overflow-hidden rounded-[5px] bg-[#181818] shadow-md"
       style={{ width: 95, height: 142 }}
     >
-      <img src={item.poster || (item as any).img || (item as any).backdrop} onError={onImgError} alt={item.title} loading="lazy" className="h-full w-full object-cover" />
+      <img src={item.poster || (item as any).img || (item as any).backdrop} onError={onImgError} alt={item.title} loading="lazy" className="h-full w-full object-cover object-center" />
       {item.tag && <TagLabel text={item.tag} />}
     </div>
   </button>
