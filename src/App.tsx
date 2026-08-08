@@ -57,8 +57,19 @@ export const App: React.FC = () => {
 
   /* ---------------- data ---------------- */
   useEffect(() => {
-    fetchHome().then(setHome).catch(err => console.error('Home failed:', err));
-    fetchGenres().then(setGenres).catch(() => {});
+    const loadData = () => {
+      fetchHome().then(setHome).catch(err => console.error('Home failed:', err));
+      fetchGenres().then(setGenres).catch(() => {});
+    };
+
+    loadData();
+
+    // Auto-refresh 3 seconds after opening so background urls.json dataset populates UI
+    const timer = setTimeout(() => {
+      loadData();
+    }, 3000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
