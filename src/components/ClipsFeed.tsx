@@ -143,14 +143,6 @@ export const ClipsFeed: React.FC<{
             Categories
           </button>
         </div>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="pointer-events-auto flex items-center gap-1.5 rounded-full bg-red-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-lg active:scale-95"
-          title="Add New Clip from Web"
-        >
-          <PlusIcon className="h-4 w-4" />
-          <span>Add</span>
-        </button>
       </div>
 
       {tab === 'categories' ? (

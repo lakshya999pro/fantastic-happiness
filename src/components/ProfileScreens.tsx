@@ -144,14 +144,6 @@ export const ProfileSheet: React.FC<{
 
       <div className="flex flex-col gap-3">
         <div className="overflow-hidden rounded-lg">
-          <Row
-            icon={<GearIcon className="h-7 w-7 text-nfred" />}
-            title="Admin & Google Drive Manager"
-            subtitle="Upload video links & manage catalog"
-            onClick={() => window.open('/admin', '_blank')}
-          />
-        </div>
-        <div className="overflow-hidden rounded-lg">
           <Row icon={<GearIcon className="h-7 w-7" />} title="App Settings" onClick={onAppSettings} />
         </div>
         <div className="overflow-hidden rounded-lg">
