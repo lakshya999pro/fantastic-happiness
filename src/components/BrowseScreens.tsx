@@ -4,6 +4,7 @@ import { fetchGames, fetchNewHot } from '../services/api';
 import { PosterCard, onImgError } from './Cards';
 import { ScreenHeader } from './ProfileScreens';
 import { BellIcon, DownloadIcon, PlayIcon, PlusIcon } from './Icons';
+import { GridSkeleton } from './Skeletons';
 
 /** 3-column poster grid used by Shows / Movies / a picked category. */
 export const BrowseGrid: React.FC<{
@@ -19,9 +20,7 @@ export const BrowseGrid: React.FC<{
       {total > 0 && <span className="ml-2 text-[14px] font-normal text-nfgrey">{total} titles</span>}
     </h2>
     {loading ? (
-      <div className="flex justify-center py-16">
-        <span className="h-6 w-6 animate-spin rounded-full border-2 border-white/25 border-t-white" />
-      </div>
+      <GridSkeleton />
     ) : (
       <div className="grid grid-cols-3 gap-2">
         {items.map(item => (

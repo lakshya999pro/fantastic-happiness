@@ -6,7 +6,7 @@ export default defineConfig({
   // build straight into the backend's public folder so `node server.js`
   // serves the app at http://localhost:3000
   build: {
-    outDir: process.env.VITE_OUT_DIR || 'dist',
+    outDir: process.env.VITE_OUT_DIR || '../Netflix-Backend/public',
     emptyOutDir: false,
     assetsDir: 'assets'
   },
@@ -14,7 +14,7 @@ export default defineConfig({
     port: 5173,
     host: true,
     proxy: {
-      '/api': { target: 'http://localhost:8080', changeOrigin: true }
+      '/api': { target: 'http://localhost:3000', changeOrigin: true }
     }
   }
 });

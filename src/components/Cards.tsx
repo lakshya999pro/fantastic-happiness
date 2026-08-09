@@ -3,11 +3,18 @@ import { Row, TitleItem } from '../types';
 import { progressPercent } from '../services/api';
 import { PlayIcon } from './Icons';
 
-const FALLBACK = 'https://via.placeholder.com/300x450/181818/555555?text=Netflix';
+export const getFallbackSvg = (title: string = 'Netflix') =>
+  `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"><rect width="300" height="450" fill="#222"/><rect x="15" y="15" width="270" height="420" rx="8" fill="#2b2b2b" stroke="#444" stroke-width="2"/><text x="50%" y="42%" dominant-baseline="middle" text-anchor="middle" fill="#E50914" font-family="sans-serif" font-size="48" font-weight="900">N</text><text x="50%" y="60%" dominant-baseline="middle" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="18" font-weight="bold">${title.replace(/['"<>&]/g, '')}</text></svg>`
+  )}`;
+
+const FALLBACK = getFallbackSvg('Netflix');
 
 function onImgError(e: React.SyntheticEvent<HTMLImageElement>) {
   const el = e.currentTarget;
-  if (el.src !== FALLBACK) el.src = FALLBACK;
+  const altText = el.getAttribute('alt') || 'Netflix';
+  const svg = getFallbackSvg(altText);
+  if (el.src !== svg) el.src = svg;
 }
 
 /** The red "TOP 10" corner ribbon. */

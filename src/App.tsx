@@ -25,6 +25,7 @@ import {
   NewHotScreen,
   NotificationsScreen
 } from './components/BrowseScreens';
+import { HomeSkeleton } from './components/Skeletons';
 
 /** Ambient colour behind the Home header, like the app's artwork-tinted top. */
 const TINTS = ['#2a0d16', '#0d2226', '#1b1030', '#2a1a08', '#101c2e'];
@@ -206,9 +207,7 @@ export const App: React.FC = () => {
                   onOpen={openDetail}
                 />
               ) : !home ? (
-                <div className="flex justify-center py-24">
-                  <span className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-nfred" />
-                </div>
+                <HomeSkeleton />
               ) : (
                 <div className="pb-24">
                   <HeroBanner
